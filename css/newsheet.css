@@ -12,7 +12,15 @@ body{
     height: auto;
 }
 .top{
-    
+      background-color:rgb(255,255,255);
+    color: #C8032B;
+    text-align: center;
+    top:0px;
+    margin: 2em 8em;
+    min-height: 3em;
+    z-index: 1;
+    font-weight: bolder;
+    padding: 0.5em;
 }
 .section{
     background-color:rgb(255,255,255) ;
