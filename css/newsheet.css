@@ -31,3 +31,10 @@ body{
     margin: auto;
     padding: 2em;
 }
+
+.links a{
+    text-decoration:underline;
+    text-align: center;
+    color: #C8032B;
+    font-weight: bold;
+}
