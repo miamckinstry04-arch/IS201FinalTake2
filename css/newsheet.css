@@ -1,4 +1,13 @@
-body {
-    background-color:#D5FFFF;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+body{
+    background-color:rgb(0,33,69);
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+    
+}
+.image{
+    text-align: center;
+    
+}
+.image img {
+    max-width: 70vw;
+    height: auto;
 }
