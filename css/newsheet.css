@@ -23,3 +23,7 @@ body{
     margin: 2em;
     padding: 2em;
 }
+.video iframe{
+    display: block;
+    margin: auto;
+}
