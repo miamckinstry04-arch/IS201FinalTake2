@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastel Snake - IS 201</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f4f8; /* Soft blue-grey background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #6a7b83;
+        }
+
+        h1 { margin-bottom: 10px; }
+
+        #game-container {
+            position: relative;
+            border: 10px solid #d1e8e2; /* Pastel Mint border */
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        canvas {
+            display: block;
+            background-color: #ffffff;
+        }
+
+        .score-board {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #a0aeb5;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Pastel Snake</h1>
+    <div class="score-board">Score: <span id="score">0</span></div>
+    
+    <div id="game-container">
+        <canvas id="snakeGame" width="400" height="400"></canvas>
+    </div>
+
+    <div class="controls">Use Arrow Keys to Move</div>
+
+    <script>
+        const canvas = document.getElementById("snakeGame");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+
+        let score = 0;
+        let dx = 0;
+        let dy = 0;
+        
+        // Snake body parts
+        let snake = [
+            {x: 10, y: 10}, 
+            {x: 10, y: 11}, 
+            {x: 10, y: 12}
+        ];
+
+        // Food coordinates
+        let foodX = 5;
+        let foodY = 5;
+
+        // Game Loop
+        function main() {
+            if (didGameEnd()) {
+                // Reset Game
+                alert("Game Over! Your score: " + score);
+                resetGame();
+            }
+
+            setTimeout(function onTick() {
+                clearCanvas();
+                drawFood();
+                advanceSnake();
+                drawSnake();
+                main();
+            }, 100);
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function drawSnake() {
+            snake.forEach((part, index) => {
+                // Head is a slightly different pastel green than the body
+                ctx.fillStyle = (index === 0) ? "#b2e2f2" : "#d1e8e2";
+                ctx.strokeStyle = "#ffffff";
+                ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize, gridSize);
+                ctx.strokeRect(part.x * gridSize, part.y * gridSize, gridSize, gridSize);
+            });
+        }
+
+        function advanceSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+            snake.unshift(head);
+
+            const didEatFood = snake[0].x === foodX && snake[0].y === foodY;
+            if (didEatFood) {
+                score += 10;
+                scoreElement.innerHTML = score;
+                createFood();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function didGameEnd() {
+            for (let i = 4; i < snake.length; i++) {
+                if (snake[i].x === snake[0].x && snake[i].y === snake[0].y) return true;
+            }
+            const hitLeftWall = snake[0].x < 0;
+            const hitRightWall = snake[0].x > tileCount - 1;
+            const hitTopWall = snake[0].y < 0;
+            const hitBottomWall = snake[0].y > tileCount - 1;
+            return hitLeftWall || hitRightWall || hitTopWall || hitBottomWall;
+        }
+
+        function createFood() {
+            foodX = Math.floor(Math.random() * tileCount);
+            foodY = Math.floor(Math.random() * tileCount);
+            // Make sure food doesn't spawn on snake body
+            snake.forEach(function isFoodOnSnake(part) {
+                if (part.x == foodX && part.y == foodY) createFood();
+            });
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "#ffccd5"; // Pastel Pink
+            ctx.fillRect(foodX * gridSize, foodY * gridSize, gridSize, gridSize);
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreElement.innerHTML = score;
+            snake = [{x: 10, y: 10}, {x: 10, y: 11}, {x: 10, y: 12}];
+            dx = 0;
+            dy = 0;
+            createFood();
+        }
+
+        function changeDirection(event) {
+            const LEFT_KEY = 37;
+            const RIGHT_KEY = 39;
+            const UP_KEY = 38;
+            const DOWN_KEY = 40;
+
+            const keyPressed = event.keyCode;
+            const goingUp = dy === -1;
+            const goingDown = dy === 1;
+            const goingRight = dx === 1;
+            const goingLeft = dx === -1;
+
+            if (keyPressed === LEFT_KEY && !goingRight) { dx = -1; dy = 0; }
+            if (keyPressed === UP_KEY && !goingDown) { dx = 0; dy = -1; }
+            if (keyPressed === RIGHT_KEY && !goingLeft) { dx = 1; dy = 0; }
+            if (keyPressed === DOWN_KEY && !goingUp) { dx = 0; dy = 1; }
+        }
+
+        document.addEventListener("keydown", changeDirection);
+
+        // Prevent arrow keys from scrolling the page
+        window.addEventListener("keydown", function(e) {
+            if([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+
+        createFood();
+        main();
+    </script>
+</body>
+</html>
